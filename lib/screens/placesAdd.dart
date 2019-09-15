@@ -1,4 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:io';
+import 'package:provider/provider.dart';
+
+import 'package:places/widgets/imageInput.dart';
+import 'package:places/providers/places.dart';
 
 class AddPlacesScreen extends StatefulWidget {
   static const routeName = '/add-place';
@@ -10,6 +15,7 @@ class AddPlacesScreen extends StatefulWidget {
 class _AddPlacesScreenState extends State<AddPlacesScreen> {
 
   TextEditingController _titleControler;
+  File _pickedImage;
 
   @override
   void initState() {
@@ -17,6 +23,20 @@ class _AddPlacesScreenState extends State<AddPlacesScreen> {
       _titleControler = TextEditingController();  
   }
 
+  void _selectImage(File pickedImage){
+    _pickedImage = pickedImage;
+  }
+
+  void _savePlace(){
+    if(_titleControler.text.isEmpty || _pickedImage == null){
+      return;
+    }
+
+    Provider.of<PlacesProvider>(context, listen: false).addPlace(_titleControler.text, _pickedImage);
+
+    Navigator.of(context).pop();
+
+  }
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -33,9 +53,8 @@ class _AddPlacesScreenState extends State<AddPlacesScreen> {
       ),
       child: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            SizedBox(height: 60,),
+            SizedBox(height: 60,width: double.infinity,),
             Expanded(child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -46,24 +65,14 @@ class _AddPlacesScreenState extends State<AddPlacesScreen> {
                     decoration: BoxDecoration(border: Border.all(width: 0.0, color: CupertinoColors.inactiveGray,),
                     borderRadius: BorderRadius.circular(15.0),),
                   ),
-                  SizedBox(height: 20,),
-                  CupertinoTextField(
-                    placeholder: 'Text Message',
-                    decoration: BoxDecoration(border: Border.all(width: 0.0, color: CupertinoColors.inactiveGray,),
-                    borderRadius: BorderRadius.circular(15.0),),
-                  ),
-                  SizedBox(height: 20,),
-                  CupertinoTextField(
-                    placeholder: 'Text Message',
-                    decoration: BoxDecoration(border: Border.all(width: 0.0, color: CupertinoColors.inactiveGray,),
-                    borderRadius: BorderRadius.circular(15.0),),
-                  ),
+                  SizedBox(height: 10,),
+                  ImageInput(_selectImage),
                 ],),
               ),
             ),),
             SizedBox(height: 30,),
             CupertinoButton(
-              onPressed: (){},
+              onPressed: _savePlace,
               color: CupertinoColors.activeBlue,
               child: Flex(
                 direction: Axis.horizontal,

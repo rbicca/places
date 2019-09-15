@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dart:io';
 
 import 'package:places/models/CPlace.dart';
 
@@ -9,4 +10,15 @@ class PlacesProvider with ChangeNotifier {
     return [..._items];
   }
   
+  void addPlace(String title, File pickedImage){
+    final newPlace = Place(
+      id: DateTime.now().toString(),
+      image: pickedImage,
+      title: title,
+      location: null
+    );
+    _items.add(newPlace);
+    notifyListeners();
+    
+  }
 }
