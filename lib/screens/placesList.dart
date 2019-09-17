@@ -19,25 +19,30 @@ class PlacesListScreen extends StatelessWidget {
           ),
         ),
       ),
-      child: Consumer<PlacesProvider>(
-        child: Center(
-          child: const Text('Got no places yet, start adding som!'),
-        ),
-        builder: (ctx, placesProvider, ch) =>  placesProvider.items.length <= 0 
-                  ? ch
-                  : ListView.builder(
-                      itemCount: placesProvider.items.length,
-                      itemBuilder: (ctx, i) => Material(
-                          type: MaterialType.transparency,
-                          child: ListTile(
-                            leading: CircleAvatar(backgroundImage: FileImage(placesProvider.items[i].image),),
-                            title: Text(placesProvider.items[i].title),
-                            onTap: (){
-                              //Go to details...
-                            },
+      child: FutureBuilder(
+              future: Provider.of<PlacesProvider>(context, listen: false).fetchAndSetPlaces(),
+              builder: (ctx, snapshot) =>  snapshot.connectionState == ConnectionState.waiting
+                          ?  Center(child: CircularProgressIndicator(),)  
+                          : Consumer<PlacesProvider>(
+          child: Center(
+            child: const Text('Got no places yet, start adding som!'),
+          ),
+          builder: (ctx, placesProvider, ch) =>  placesProvider.items.length <= 0 
+                    ? ch
+                    : ListView.builder(
+                        itemCount: placesProvider.items.length,
+                        itemBuilder: (ctx, i) => Material(
+                            type: MaterialType.transparency,
+                            child: ListTile(
+                              leading: CircleAvatar(backgroundImage: FileImage(placesProvider.items[i].image),),
+                              title: Text(placesProvider.items[i].title),
+                              onTap: (){
+                                //Go to details...
+                              },
+                          ),
                         ),
-                      ),
-                  ),
+                    ),
+        ),
       )
     );
   }
